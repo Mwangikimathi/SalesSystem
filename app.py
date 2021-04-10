@@ -1,8 +1,9 @@
-from flask import Flask,render_template,request,url_for,redirect
+from flask import Flask,render_template,request,url_for,redirect,flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 app = Flask(__name__)
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:nelsonkimathi123@localhost:5432/sales_database'
 db = SQLAlchemy(app)
 
@@ -55,7 +56,7 @@ def make_sales(inv_id):
        n = Item.query.filter_by(id = inv_id).first()
        n.stock = int(n.stock) - int(quantity)
        if int(n.stock) - int(quantity) <= 0:
-           print("Quantity entered is more than stock")
+           flash(u"Quantity entered is more than stock", 'error')
            return redirect(url_for('add_details'))
            
        db.session.add(n)
