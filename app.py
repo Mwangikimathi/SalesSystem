@@ -1,6 +1,7 @@
 from flask import Flask,render_template,request,url_for,redirect,flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import pygal 
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -80,7 +81,6 @@ def edititem(y):
         editem = Item.query.filter_by(id = y).first()
         print(editem)
         return render_template('edititem.html', form = editem)
-
     else:     
         editem = Item.query.filter_by(id = y).first()
         editem.name = request.form['name']
@@ -100,6 +100,21 @@ def viewsales(x):
         print(item_sale)
         return render_template('viewsales.html', posts = item_sale)
 
+@app.route('/all_sales', methods = ['GET'])
+def all_sales():
+    if request.method == 'GET':
+        sale_all = Sale.query.all()
+        print(sale_all)
+        return render_template('all_sale.html', invent = sale_all)
+
+@app.route('charting')
+def charting():
+    pie_chart = pygal.Pie()
+    pie_chart.title = 'Browser usage in February 2012 (in %)'
+    pie_chart.add('IE', 19.5)
+    pie_chart.add('Firefox', 36.6)
+    pie_chart.add('Chrome', 36.3
+    pie_chart.render()
 
 if __name__=="__main__":
     app.run(debug=True)

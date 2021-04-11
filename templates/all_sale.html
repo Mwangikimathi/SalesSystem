@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Sales Data</title>
+    <title>All Sales</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <link rel="stylesheet" href="/static/css/viewsal.css">
@@ -15,7 +15,7 @@
         <img src="/static/images/shark_icon.jpg" alt="" width="75cm" height="90">
       </a>
     <div class="container-fluid">
-      <a class="navbar-brand" href="#" style="font-family: 'Times New Roman', Times, serif; font-weight: bolder; font-size: 0.9cm;">Sales Data</a>
+      <a class="navbar-brand" href="#" style="font-family: 'Times New Roman', Times, serif; font-weight: bolder; font-size: 0.9cm;">All Sales</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -54,16 +54,16 @@
             </thead>
             <tbody>
                 <tr>
-                {% for post in posts %}
+                {% for invent in invent %}
                 <tr>
                     <td colspan="1">
-                    {{post.id}}
+                    {{invent.id}}
                     </td>
                     <td>
-                    {{post.created_at}}
+                    {{invent.created_at}}
                     </td>
                     <td>
-                    {{post.quantity}}
+                    {{invent.quantity}}
                     </td>
                 </tr>
             </tbody>
