@@ -16,7 +16,7 @@ class Item(db.Model):
     __tablename__ = 'inventories'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
-    stock = db.Column(db.Integer, unique=True, nullable=False)
+    stock = db.Column(db.Integer, unique=False, nullable=False)
     buying_price = db.Column(db.Integer, unique=False, nullable=False)
     selling_price = db.Column(db.Integer, unique=False, nullable=False)
 
@@ -55,18 +55,22 @@ def make_sales(inv_id):
        
        n = Item.query.filter_by(id = inv_id).first()
        n.stock = int(n.stock) - int(quantity)
-       if int(n.stock) - int(quantity) <= 0:
+       if int(n.stock) < 0:
            flash(u"Quantity entered is more than stock", 'error')
            return redirect(url_for('add_details'))
-           
-       db.session.add(n)
-       db.session.commit()
-
+       elif int(quantity) <= 0:
+           flash(u"Invalid quantity entered. Enter amount greater than 0", 'error')
+           return redirect(url_for('add_details'))
+       elif Item.stock == 0:
+           flash(u"There is no stock available for this item.", 'error')
+           return redirect(url_for('add_details'))
        print(quantity ,inv_id)
+       db.session.add(n)
+       db.session.commit()    
        sale = Sale(quantity = quantity, inv_id = inv_id)
        db.session.add(sale)
        db.session.commit()
-       return redirect(url_for('add_details'))
+       return redirect(url_for('add_details'))        
     else:
         return render_template('items.html')
 
@@ -75,22 +79,19 @@ def edititem(y):
     if request.method == 'GET':
         editem = Item.query.filter_by(id = y).first()
         print(editem)
-
         return render_template('edititem.html', form = editem)
-    else:
-       editem = Item.query.filter_by(id = y).first()
-       editem.name = request.form['name']
-       editem.stock = request.form['stock']
-       editem.buying_price = request.form['buying_price']
-       editem.selling_price = request.form['selling_price']
 
-       db.session.add(editem)
-       db.session.commit()
-       print("Record successfully edited")
-       return redirect(url_for('add_details'))
+    else:     
+        editem = Item.query.filter_by(id = y).first()
+        editem.name = request.form['name']
+        editem.stock = request.form['stock']
+        editem.buying_price = request.form['buying_price']
+        editem.selling_price = request.form['selling_price']
 
-    
-
+        db.session.add(editem)
+        db.session.commit()
+        print("Record successfully edited")
+        return redirect(url_for('add_details'))
 
 @app.route('/viewsales/<int:x>', methods = ['GET'])
 def viewsales(x):
