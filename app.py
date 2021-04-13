@@ -2,6 +2,7 @@ from flask import Flask,render_template,request,url_for,redirect,flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import pygal 
+import itertools
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -81,7 +82,7 @@ def edititem(y):
         editem = Item.query.filter_by(id = y).first()
         print(editem)
         return render_template('edititem.html', form = editem)
-    else:     
+    else:    
         editem = Item.query.filter_by(id = y).first()
         editem.name = request.form['name']
         editem.stock = request.form['stock']
@@ -107,14 +108,26 @@ def all_sales():
         print(sale_all)
         return render_template('all_sale.html', invent = sale_all)
 
-@app.route('charting')
+@app.route('/charting')
 def charting():
-    pie_chart = pygal.Pie()
-    pie_chart.title = 'Browser usage in February 2012 (in %)'
-    pie_chart.add('IE', 19.5)
-    pie_chart.add('Firefox', 36.6)
-    pie_chart.add('Chrome', 36.3
-    pie_chart.render()
+    sale_data = Sale.query.with_entities(Sale.quantity).all()
+    sale_date = Sale.query.with_entities(Sale.created_at).all()
+
+    new_data = []
+    new_item_data = []
+
+    for sale in sale_data:
+        new_data.append(sale[0])
+
+    for date in sale_date:
+        new_item_data.append(date[0])
+
+    line_chart = pygal.HorizontalBar()
+    line_chart.title = 'Sales Made in 2021'
+    line_chart.x_labels = new_item_data
+    line_chart.add('Sales', new_data)
+    chart = line_chart.render()
+    return render_template('charting.html', chart = chart)
 
 if __name__=="__main__":
     app.run(debug=True)
