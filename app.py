@@ -2,7 +2,6 @@ from flask import Flask,render_template,request,url_for,redirect,flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import pygal 
-import itertools
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -98,6 +97,7 @@ def edititem(y):
 def viewsales(x):
     if request.method == 'GET':
         item_sale = Sale.query.filter_by(inv_id = x).all()
+        s_item = Item.query.filter_by(id = x).all()
         print(item_sale)
         return render_template('viewsales.html', posts = item_sale)
 
@@ -112,20 +112,23 @@ def all_sales():
 def charting():
     sale_data = Sale.query.with_entities(Sale.quantity).all()
     sale_date = Sale.query.with_entities(Sale.created_at).all()
+    sales = Sale.query.all()
 
-    new_data = []
-    new_item_data = []
+    chart_data = {}
+   
+    # Adding values in a dictionary according to their keys if the keys are the same 
+    for s in sales:
+        dt = s.created_at.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
+        if str(dt) in chart_data.keys():
+            chart_data[str(dt)] = chart_data[str(dt)] + s.quantity
+        else:
+            chart_data[str(dt)] = s.quantity
+    print(chart_data)
 
-    for sale in sale_data:
-        new_data.append(sale[0])
-
-    for date in sale_date:
-        new_item_data.append(date[0])
-
-    line_chart = pygal.HorizontalBar()
+    line_chart = pygal.Bar()
     line_chart.title = 'Sales Made in 2021'
-    line_chart.x_labels = new_item_data
-    line_chart.add('Sales', new_data)
+    for k,v in chart_data.items():
+        line_chart.add(k, v)
     chart = line_chart.render()
     return render_template('charting.html', chart = chart)
 
