@@ -108,6 +108,14 @@ def all_sales():
         print(sale_all)
         return render_template('all_sale.html', invent = sale_all)
 
+@app.route('/inventory', methods = ['GET'])
+def inventory():
+    if request.method == 'GET':
+        inv_all = Item.query.with_entities(Item.id,Item.name,Item.stock).all()
+        print(inv_all)
+        return render_template('inventory.html',advant = inv_all)
+
+
 @app.route('/charting')
 def charting():
     sale_data = Sale.query.with_entities(Sale.quantity).all()
@@ -125,7 +133,7 @@ def charting():
             chart_data[str(dt)] = s.quantity
     print(chart_data)
 
-    line_chart = pygal.Bar()
+    line_chart = pygal.Bar(margin_right=20,margin_bottom=20,margin_left=20,margin_top=20)
     line_chart.title = 'Sales Made in 2021'
     for k,v in chart_data.items():
         line_chart.add(k, v)
